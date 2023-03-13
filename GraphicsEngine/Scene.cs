@@ -14,28 +14,31 @@ namespace GraphicsEngine
     internal class Scene
     {
         public Mesh model = new Mesh();
-
+        public System.Windows.Controls.Image canvas { get; set; }
+        
+        // ! make it dynamic later not just on startup
         public int ScreenHeight;
         public int ScreenWidth;
+        public Thread currentRenderProcess;
 
-        public double scale = 200;
-        public double[,] projection_matrix = new double[,] { { 1, 0, 0 }, { 0, 1, 0 } };
+        public readonly double scale = 100;
+        private readonly double[,] projection_matrix = new double[,] { { 1, 0, 0 }, { 0, 1, 0 } };
         
-        readonly Functions func = new Functions();
-        public void TestF(System.Windows.Controls.Image RenderImage, Bitmap myBitmap)
+        private readonly Functions func = new Functions();
+        public void Render()
         {
-            RenderImage.Source = func.BitmapToImageSource(myBitmap);
-        }
-        public void Render(System.Windows.Controls.Image canvas)
-        {
+            currentRenderProcess?.Abort();
+
             new Thread(() =>
             {
                 Thread.CurrentThread.IsBackground = true;
+                Thread.CurrentThread.Name = "RenderProcess";
+                currentRenderProcess = Thread.CurrentThread;
                 double angle = 0;
 
                 while (model != null)
                 {
-                    Bitmap image = new Bitmap(ScreenHeight, ScreenWidth);
+                    Bitmap image = new Bitmap(ScreenWidth, ScreenHeight);
 
                     foreach (Triangle triangle in model.triangles)
                     {
@@ -50,23 +53,16 @@ namespace GraphicsEngine
                             int x = (int)(projected2d[0, 0] * scale + ScreenHeight/2);
                             int y = (int)(projected2d[1, 0] * scale + ScreenHeight/2);
                             points.Add((x, y));
-                            //image.SetPixel(x, y, Color.Yellow );
                         }
                         func.Bresenham(image, points[0].Item1, points[0].Item2, points[1].Item1, points[1].Item2);
                         func.Bresenham(image, points[1].Item1, points[1].Item2, points[2].Item1, points[2].Item2);
                         func.Bresenham(image, points[2].Item1, points[2].Item2, points[0].Item1, points[0].Item2);
                     }
-                    canvas.Dispatcher.Invoke(() =>
-                    {
-                        canvas.Source = func.BitmapToImageSource(image);
-                    });
+                    canvas.Dispatcher.Invoke(() => canvas.Source = func.BitmapToImageSource(image));
                     angle += .01;
                 }
                 // at the end clear screen
-                canvas.Dispatcher.Invoke(() =>
-                {
-                    canvas.Source = null;
-                });
+                canvas.Dispatcher.Invoke(() => canvas.Source = null);
             }).Start();
         }
     }

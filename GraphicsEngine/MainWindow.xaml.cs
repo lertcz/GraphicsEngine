@@ -27,12 +27,13 @@ namespace GraphicsEngine
             InitializeComponent();
         }
 
-        readonly Importing import = new Importing();
-        readonly Functions func = new Functions();
-        readonly Scene scene = new Scene();
+        private static readonly Scene scene = new Scene();
+        private static readonly Importing import = new Importing(scene);
+        private static readonly Functions func = new Functions(import);
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            scene.canvas = RenderImage;
             scene.ScreenHeight = (int)RenderWindow.ActualHeight;
             scene.ScreenWidth = (int)RenderWindow.ActualWidth;
 
@@ -80,7 +81,7 @@ namespace GraphicsEngine
                 new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 1.0f), new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(1.0f, 0.0f, 0.0f) }),
             };
             scene.model = test;
-            scene.Render(RenderImage);
+            scene.Render();
         }
     }
 }

@@ -13,7 +13,12 @@ namespace GraphicsEngine
 {
     internal class Functions
     {
-        readonly Importing import = new Importing();
+        private Importing Import { get; set; }
+        public Functions(Importing import=null)
+        {
+            this.Import = import;
+        }
+
         public List<Button> LoadDemos()
         {
             List<Button> buttons = new List<Button>();
@@ -27,7 +32,7 @@ namespace GraphicsEngine
                 };
                 btn.Click += (obj, e) =>
                 {
-                    import.ProcessDir(dir);
+                    Import.ProcessDir(dir);
                 };
                 buttons.Add(btn);
             }

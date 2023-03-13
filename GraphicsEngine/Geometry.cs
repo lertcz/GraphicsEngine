@@ -29,6 +29,29 @@ namespace GraphicsEngine
     }
     class Mesh
     {
-        public List<Triangle> triangles;
+        public List<Triangle> triangles = new List<Triangle>();
+    }
+
+    class Face
+    {
+        public List<int> VertexIndex = new List<int>();
+        public List<int> NormalIndex = new List<int>();
+        public List<int> TextureIndex = new List<int>();
+        public void AddIndexes(int vertex, int normal, int texture)
+        {
+            VertexIndex.Add(vertex);
+            NormalIndex.Add(normal);
+            TextureIndex.Add(texture);
+        }
+        public override string ToString()
+        {
+            string message = "";
+            for (int i = 0; i < VertexIndex.Count; i++)
+            {
+                message += String.Format("V: {0}, N: {1}. T: {2}\n", VertexIndex[i], NormalIndex[i], TextureIndex[i]);
+            }
+            message += "------------\n";
+            return message;
+        }
     }
 }
