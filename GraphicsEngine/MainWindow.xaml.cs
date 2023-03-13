@@ -22,14 +22,15 @@ namespace GraphicsEngine
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-
         private static readonly Scene scene = new Scene();
         private static readonly Importing import = new Importing(scene);
         private static readonly Functions func = new Functions(import);
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = scene;
+        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -42,6 +43,11 @@ namespace GraphicsEngine
                 Demos.Children.Add(btn);
             }
         }
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            scene.currentRenderProcess?.Abort();
+        }
+        
         private void SelectFolder_Click(object sender, RoutedEventArgs e)
         {
             import.GetFolder();
@@ -50,38 +56,6 @@ namespace GraphicsEngine
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             scene.model = null;
-        }
-
-        private void Test_Click(object sender, RoutedEventArgs e)
-        {
-            Mesh test = new Mesh();
-            test.triangles = new List<Triangle>{
-                // South
-                new Triangle(new Vector3D[]{ new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(0.0f, 1.0f, 0.0f), new Vector3D(1.0f, 1.0f, 0.0f) }),
-                new Triangle(new Vector3D[]{ new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(1.0f, 1.0f, 0.0f), new Vector3D(1.0f, 0.0f, 0.0f) }),
-                
-                // East
-                new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 0.0f), new Vector3D(1.0f, 1.0f, 0.0f), new Vector3D(1.0f, 1.0f, 1.0f) }),
-                new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 0.0f), new Vector3D(1.0f, 1.0f, 1.0f), new Vector3D(1.0f, 0.0f, 1.0f) }),
-
-                // North
-                new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 1.0f), new Vector3D(1.0f, 1.0f, 1.0f), new Vector3D(0.0f, 1.0f, 1.0f) }),
-                new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 1.0f), new Vector3D(0.0f, 1.0f, 1.0f), new Vector3D(0.0f, 0.0f, 1.0f) }),
-
-                // West
-                new Triangle(new Vector3D[]{ new Vector3D(0.0f, 0.0f, 1.0f), new Vector3D(0.0f, 1.0f, 1.0f), new Vector3D(0.0f, 1.0f, 0.0f) }),
-                new Triangle(new Vector3D[]{ new Vector3D(0.0f, 0.0f, 1.0f), new Vector3D(0.0f, 1.0f, 0.0f), new Vector3D(0.0f, 0.0f, 0.0f) }),
-
-                // Top
-                new Triangle(new Vector3D[]{ new Vector3D(0.0f, 1.0f, 0.0f), new Vector3D(0.0f, 1.0f, 1.0f), new Vector3D(1.0f, 1.0f, 1.0f) }),
-                new Triangle(new Vector3D[]{ new Vector3D(0.0f, 1.0f, 0.0f), new Vector3D(1.0f, 1.0f, 1.0f), new Vector3D(1.0f, 1.0f, 0.0f) }),
-
-                // Bottom
-                new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 1.0f), new Vector3D(0.0f, 0.0f, 1.0f), new Vector3D(0.0f, 0.0f, 0.0f) }),
-                new Triangle(new Vector3D[]{ new Vector3D(1.0f, 0.0f, 1.0f), new Vector3D(0.0f, 0.0f, 0.0f), new Vector3D(1.0f, 0.0f, 0.0f) }),
-            };
-            scene.model = test;
-            scene.Render();
         }
     }
 }

@@ -5,10 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GraphicsEngine"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="GraphicEngine"
+    Title="{Binding Path=WindowTitle}"
     Width="1920"
     Height="1080"
     Background="#121212"
+    Closed="Window_Closed"
     Loaded="Window_Loaded"
     WindowState="Maximized">
     <Window.Resources>
@@ -57,10 +58,6 @@
             </StackPanel>
             <StackPanel x:Name="Demos">
                 <Label>Demos</Label>
-                <Button
-                    x:Name="Test"
-                    Click="Test_Click"
-                    Content="TEST" />
             </StackPanel>
         </StackPanel>
     </Grid>

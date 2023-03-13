@@ -103,7 +103,6 @@ namespace GraphicsEngine
 
             while (true)
             {
-                //drawPixel(x1, y1, color);
                 canvas.SetPixel((int)x1, (int)y1, Color.Yellow);
 
                 if (x1 == x2 && y1 == y2) break;
