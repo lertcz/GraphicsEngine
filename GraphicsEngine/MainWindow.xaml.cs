@@ -37,6 +37,7 @@ namespace GraphicsEngine
             scene.canvas = RenderImage;
             scene.ScreenHeight = (int)RenderWindow.ActualHeight;
             scene.ScreenWidth = (int)RenderWindow.ActualWidth;
+            scene.InitializeProjectionMatrix(90, 0.1, 1000);
 
             foreach (Button btn in func.LoadDemos())
             {

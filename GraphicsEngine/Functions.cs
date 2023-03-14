@@ -122,29 +122,32 @@ namespace GraphicsEngine
 
         public double[,] RotateX(double angle)
         {
-            return new double[3, 3]
+            return new double[4, 4]
             {
-                { 1, 0, 0 },
-                { 0, Math.Cos(angle), -Math.Sin(angle) },
-                { 0, Math.Sin(angle), Math.Cos(angle) }
+                { 1, 0,               0,                0 },
+                { 0, Math.Cos(angle), -Math.Sin(angle), 0 },
+                { 0, Math.Sin(angle), Math.Cos(angle),  0 },
+                { 0, 0,               0,                1 },
             };
         }
         public double[,] RotateY(double angle)
         {
-            return new double[3, 3]
+            return new double[4, 4]
             {
-                { Math.Cos(angle), 0, Math.Sin(angle) },
-                { 0, 1, 0 },
-                { -Math.Sin(angle), 0, Math.Cos(angle) }
+                { Math.Cos(angle),  0, -Math.Sin(angle), 0 },
+                { 0,                1, 0,               0 },
+                { Math.Sin(angle),  0, Math.Cos(angle), 0 },
+                { 0,                0, 0,               1 },
             };
         }
         public double[,] RotateZ(double angle)
         {
-            return new double[3, 3]
+            return new double[4, 4]
             {
-                { Math.Cos(angle), -Math.Sin(angle), 0 },
-                { Math.Sin(angle), Math.Cos(angle), 0 },
-                { 1, 0, 0 }
+                { Math.Cos(angle), -Math.Sin(angle), 0, 0 },
+                { Math.Sin(angle), Math.Cos(angle),  0, 0 },
+                { 0,               0,                1, 0 },
+                { 0,               0,                0, 1 },
             };
         }
     }

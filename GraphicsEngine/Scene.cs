@@ -49,8 +49,38 @@ namespace GraphicsEngine
         public int ScreenWidth;
         public Thread currentRenderProcess;
 
-        public readonly double scale = 200;
-        private readonly double[,] projection_matrix = new double[2, 3] { { 1, 0, 0 }, { 0, 1, 0 } };
+        public readonly double scale = 100;
+
+        private double[,] projection_matrix = new double[4, 4] {
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 }
+        };
+
+        public void InitializeProjectionMatrix(double hFOV, double near, double far)
+        {
+            // http://www.songho.ca/opengl/gl_projectionmatrix.html
+            double AspectRatio = (double)ScreenWidth / (double)ScreenHeight;
+
+            double vFOV = 2 * Math.Atan(Math.Tan(hFOV / 2.0 * (Math.PI / 180.0)) * AspectRatio) * 180.0 / Math.PI;
+
+            double halfHeight = near * Math.Tan(vFOV / 2.0 * (Math.PI / 180.0)); // half height of near plane
+            double halfWidth = halfHeight * AspectRatio;
+
+            double left   =  halfWidth / 2;
+            double right  = -halfWidth / 2;
+            double top    =  halfHeight / 2;
+            double bottom = -halfHeight / 2;
+
+            projection_matrix[0, 0] = 2 * near / (right - left);
+            projection_matrix[0, 2] = (right + left) / (right - left);
+            projection_matrix[1, 1] = 2 * near / (top - bottom);
+            projection_matrix[1, 2] = (top + bottom) / (top - bottom);
+            projection_matrix[2, 2] = -(far + near) / (far - near);
+            projection_matrix[2, 3] = -2 * far * near / (far - near);
+            projection_matrix[3, 2] = -1;
+        }
 
         private readonly Functions func = new Functions();
 
@@ -83,7 +113,7 @@ namespace GraphicsEngine
                         List<Vector> points = new List<Vector>();
                         foreach (Vector3D vertex in triangle.Vertices)
                         {
-                            double[,] rotated2d = func.Multiply(func.RotateX(angle), new double[,] { { vertex.X }, { -vertex.Y }, { vertex.Z } });
+                            double[,] rotated2d = func.Multiply(func.RotateX(angle), new double[,] { { vertex.X }, { -vertex.Y }, { vertex.Z }, { 1 } });
                             rotated2d = func.Multiply(func.RotateY(angle), rotated2d);
                             rotated2d = func.Multiply(func.RotateZ(angle), rotated2d);
 
