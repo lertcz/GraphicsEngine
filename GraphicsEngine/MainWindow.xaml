@@ -103,10 +103,12 @@
             BorderBrush="#4900ED"
             BorderThickness="0,0,2,0">
             <StackPanel HorizontalAlignment="Center">
-                <CheckBox
-                    x:Name="TexturesCheckBox"
-                    x:FieldModifier="public"
-                    Content="Textures">
+                <CheckBox x:Name="Potato" Content="Potato">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="2" ScaleY="2" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
+                <CheckBox x:Name="TexturesCheckBox" Content="Textures">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="2" ScaleY="2" />
                     </CheckBox.LayoutTransform>

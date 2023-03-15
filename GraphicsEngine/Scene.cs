@@ -37,18 +37,20 @@ namespace GraphicsEngine
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        private double fps;
         private double FrameCount;
         private DateTime Lastcounted = DateTime.Now;
         #endregion
 
         public Mesh model = new Mesh();
         public System.Windows.Controls.Image canvas { get; set; }
+
         public CheckBox Textures { get; set; }
+        public CheckBox LowRes { get; set; }
 
-        public int ScreenHeight;
-        public int ScreenWidth;
-
-        public readonly double scale = 100;
+        public double scale;
+        public int FullScreenHeight, ScreenHeight;
+        public int FullScreenWidth, ScreenWidth;
 
         private double[,] projection_matrix = new double[4, 4] {
             { 0, 0, 0, 0 },
@@ -88,6 +90,21 @@ namespace GraphicsEngine
         {
             currentRenderProcess?.Abort();
 
+            if (LowRes.IsChecked == false)
+            {
+                ScreenHeight = FullScreenHeight;
+                ScreenWidth = FullScreenWidth;
+                scale = 100;
+            }
+            else
+            {
+                ScreenHeight = FullScreenHeight / 4;
+                ScreenWidth = FullScreenWidth / 4;
+                scale = 25;
+            }
+
+            InitializeProjectionMatrix(90, .1, 100);
+
             bool RenderTextures = (bool)Textures.IsChecked;
 
             new Thread(() =>
@@ -96,15 +113,16 @@ namespace GraphicsEngine
                 Thread.CurrentThread.Name = "RenderProcess";
                 currentRenderProcess = Thread.CurrentThread;
                 double angle = 0;
+                fps = 60;
 
                 while (model != null)
                 {
                     Bitmap image = new Bitmap(ScreenWidth, ScreenHeight);
 
                     #region FPS
-                    if (Lastcounted.AddSeconds(1) <= DateTime.Now) {
-                        WindowTitle = String.Format("GraphicsEngine - FPS: {0}",
-                                                        FrameCount / (DateTime.Now - Lastcounted).TotalSeconds);
+                    if (Lastcounted.AddSeconds(.1) <= DateTime.Now) {
+                        fps = FrameCount / (DateTime.Now - Lastcounted).TotalSeconds;
+                        WindowTitle = String.Format("GraphicsEngine - FPS: {0}", fps);
                         Lastcounted = DateTime.Now;
                         FrameCount = 0;
                     }
@@ -132,7 +150,7 @@ namespace GraphicsEngine
 
                     }
                     canvas.Dispatcher.Invoke(() => canvas.Source = func.BitmapToImageSource(image));
-                    angle += .01;
+                    angle += 1 / (fps + .01);
                     FrameCount++;
                 }
                 // at the end clear screen

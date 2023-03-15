@@ -34,10 +34,13 @@ namespace GraphicsEngine
         private void InitScene()
         {
             scene.canvas = RenderImage;
+
             scene.Textures = TexturesCheckBox;
-            scene.ScreenHeight = (int)RenderWindow.ActualHeight;
-            scene.ScreenWidth = (int)RenderWindow.ActualWidth;
-            scene.InitializeProjectionMatrix(90, 0.1, 1000);
+            scene.LowRes = Potato;
+
+            scene.FullScreenHeight = (int)RenderWindow.ActualHeight;
+            scene.FullScreenWidth = (int)RenderWindow.ActualWidth;
+            //scene.InitializeProjectionMatrix(90, 0.1, 1000);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
