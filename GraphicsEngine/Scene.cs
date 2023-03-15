@@ -43,11 +43,10 @@ namespace GraphicsEngine
 
         public Mesh model = new Mesh();
         public System.Windows.Controls.Image canvas { get; set; }
-        
-        // ! make it dynamic later not just on startup
+        public CheckBox Textures { get; set; }
+
         public int ScreenHeight;
         public int ScreenWidth;
-        public Thread currentRenderProcess;
 
         public readonly double scale = 100;
 
@@ -83,10 +82,13 @@ namespace GraphicsEngine
         }
 
         private readonly Functions func = new Functions();
+        public Thread currentRenderProcess;
 
         public void Render()
         {
             currentRenderProcess?.Abort();
+
+            bool RenderTextures = (bool)Textures.IsChecked;
 
             new Thread(() =>
             {
@@ -113,6 +115,7 @@ namespace GraphicsEngine
                         List<Vector> points = new List<Vector>();
                         foreach (Vector3D vertex in triangle.Vertices)
                         {
+                            //angle = 6.28318531; // one rotation
                             double[,] rotated2d = func.Multiply(func.RotateX(angle), new double[,] { { vertex.X }, { -vertex.Y }, { vertex.Z }, { 1 } });
                             rotated2d = func.Multiply(func.RotateY(angle), rotated2d);
                             rotated2d = func.Multiply(func.RotateZ(angle), rotated2d);
@@ -123,9 +126,10 @@ namespace GraphicsEngine
                             int y = (int)(projected2d[1, 0] * scale + ScreenHeight / 2);
                             points.Add(new Vector(x, y));
                         }
-                        func.Bresenham(image, points[0].X, points[0].Y, points[1].X, points[1].Y);
-                        func.Bresenham(image, points[1].X, points[1].Y, points[2].X, points[2].Y);
-                        func.Bresenham(image, points[2].X, points[2].Y, points[0].X, points[0].Y);
+                        // options
+                        if (RenderTextures) func.FillTriangle(image, points);
+                        else func.DrawTriangle(image, points);
+
                     }
                     canvas.Dispatcher.Invoke(() => canvas.Source = func.BitmapToImageSource(image));
                     angle += .01;

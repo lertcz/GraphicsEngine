@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,12 +31,18 @@ namespace GraphicsEngine
             DataContext = scene;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void InitScene()
         {
             scene.canvas = RenderImage;
+            scene.Textures = TexturesCheckBox;
             scene.ScreenHeight = (int)RenderWindow.ActualHeight;
             scene.ScreenWidth = (int)RenderWindow.ActualWidth;
             scene.InitializeProjectionMatrix(90, 0.1, 1000);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            InitScene();
 
             foreach (Button btn in func.LoadDemos())
             {

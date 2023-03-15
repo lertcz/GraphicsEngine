@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Drawing;
+//using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Windows.Documents;
 
 namespace GraphicsEngine
 {
@@ -116,6 +120,81 @@ namespace GraphicsEngine
                 {
                     err += dx;
                     y1 += sy;
+                }
+            }
+        }
+
+        public void InterpolatePixel(Bitmap canvas, Point v1, Point v2, Point v3, Point p)
+        {
+            double p1_weight = 1.0 / (Math.Sqrt(Math.Pow(v1.x - p.x, 2) + Math.Pow(v1.y - p.y, 2)) + 1);
+            double p2_weight = 1.0 / (Math.Sqrt(Math.Pow(v2.x - p.x, 2) + Math.Pow(v2.y - p.y, 2)) + 1);
+            double p3_weight = 1.0 / (Math.Sqrt(Math.Pow(v3.x - p.x, 2) + Math.Pow(v3.y - p.y, 2)) + 1);
+
+            int R = (int)((v1.color.R * p1_weight + v2.color.R * p2_weight + v3.color.R * p3_weight) / (p1_weight + p2_weight + p3_weight));
+            int G = (int)((v1.color.G * p1_weight + v2.color.G * p2_weight + v3.color.G * p3_weight) / (p1_weight + p2_weight + p3_weight));
+            int B = (int)((v1.color.B * p1_weight + v2.color.B * p2_weight + v3.color.B * p3_weight) / (p1_weight + p2_weight + p3_weight));
+
+            canvas.SetPixel((int)p.x, (int)p.y, Color.FromArgb(255, R, G, B));
+        }
+
+        private double EdgeFunction(Point a, Point b, Point c)
+        {
+            return (c.x - a.x) * (b.y - a.y)
+                 - (c.y - a.y) * (b.x - a.x);
+        }
+
+        public void PixelOverlapTriangle(Bitmap canvas, Point vertex1, Point vertex2, Point vertex3, Point point)
+        {
+            double w1 = EdgeFunction(vertex2, vertex3, point);
+            double w2 = EdgeFunction(vertex3, vertex1, point);
+            double w3 = EdgeFunction(vertex1, vertex2, point);
+
+            if (w1 >= 0 && w2 >= 0 && w3 >= 0)
+            {
+                Point edge1 = vertex3 - vertex2;
+                Point edge2 = vertex1 - vertex3;
+                Point edge3 = vertex2 - vertex1;
+
+                bool overlaps = true;
+
+                overlaps &= (w1 == 0) ? (edge1.y == 0 && edge1.x > 0 || edge1.y > 0) : (w1 > 0);
+                overlaps &= (w2 == 0) ? (edge2.y == 0 && edge2.x > 0 || edge2.y > 0) : (w2 > 0);
+                overlaps &= (w3 == 0) ? (edge3.y == 0 && edge3.x > 0 || edge3.y > 0) : (w3 > 0); // w3 == 0 -> w2 == 0
+
+                if (overlaps)
+                {
+                    InterpolatePixel(canvas, vertex1, vertex2, vertex3, point);
+                }
+            }
+        }
+
+        public void DrawTriangle(Bitmap canvas, List<Vector> points)
+        {
+            Bresenham(canvas, points[0].X, points[0].Y, points[1].X, points[1].Y);
+            Bresenham(canvas, points[1].X, points[1].Y, points[2].X, points[2].Y);
+            Bresenham(canvas, points[2].X, points[2].Y, points[0].X, points[0].Y);
+        }
+        
+        public void FillTriangle(Bitmap canvas, List<Vector> points)
+        {
+            // https://www.youtube.com/watch?v=t7Ztio8cwqM
+            //https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
+
+            double[] X = new double[3] { points[0].X, points[1].X, points[2].X };
+            double[] Y = new double[3] { points[0].Y, points[1].Y, points[2].Y };
+            int minX = (int)X.Min();
+            int maxX = (int)X.Max();
+            int minY = (int)Y.Min();
+            int maxY = (int)Y.Max();
+            
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    Point v1 = new Point(points[0].X, points[0].Y, r: (byte)255);
+                    Point v2 = new Point(points[1].X, points[1].Y, g: (byte)255);
+                    Point v3 = new Point(points[2].X, points[2].Y, b: (byte)255); 
+                    PixelOverlapTriangle(canvas, v1, v2, v3, new Point(x, y));
                 }
             }
         }

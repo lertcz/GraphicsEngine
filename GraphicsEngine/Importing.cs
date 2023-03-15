@@ -130,7 +130,7 @@ namespace GraphicsEngine
                 }
                 else
                 {
-                    MessageBox.Show("Model must have triangles or squares only!");
+                    MessageBox.Show("Model must have triangles or squares only!\nWhen exporting make sure u press triangulate faces in blender.");
                     return;
                 }
             }

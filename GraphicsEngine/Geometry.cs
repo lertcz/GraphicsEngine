@@ -3,22 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace GraphicsEngine
 {
-    //class Vector3
-    //{
-    //    public string X { get; set; }
-    //    public string Y { get; set; }
-    //    public string Z { get; set; }
-    //    public Vector3(string x, string y, string z)
-    //    {
-    //        X = x;
-    //        Y = y;
-    //        Z = z;
-    //    }
-    //}
     class Triangle
     {
         public Vector3D[] Vertices;
@@ -52,6 +42,27 @@ namespace GraphicsEngine
             }
             message += "------------\n";
             return message;
+        }
+    }
+
+    class Point
+    {
+        public double x;
+        public double y;
+        public Color color;
+
+        public Point(double x, double y, byte r=0, byte g=0, byte b=0)
+        {
+            this.x = x;
+            this.y = y;
+            this.color.R = (byte)r;
+            this.color.G = (byte)g;
+            this.color.B = (byte)b;
+        }
+
+        public static Point operator -(Point a, Point b)
+        {
+            return new Point(a.x - b.x, a.y - b.y);
         }
     }
 }
